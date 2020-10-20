@@ -11,16 +11,16 @@ import (
 )
 
 type KeyPairOptions struct {
-	CACertPEM  []byte
-	CAKeyPEM   []byte
-	CommonName string
+	CACertPEM []byte
+	CAKeyPEM  []byte
+	DNSNames  []string
 }
 
 func GenerateKeyPair(opts KeyPairOptions) (certPEM, keyPEM []byte, err error) {
 	if len(opts.CACertPEM) == 0 || len(opts.CAKeyPEM) == 0 {
 		_, certPEM, _, keyPEM, err = GenerateRootCA()
 	} else {
-		_, certPEM, _, keyPEM, err = GenerateServerCert(opts.CommonName, opts.CACertPEM, opts.CAKeyPEM)
+		_, certPEM, _, keyPEM, err = GenerateServerCert(opts.DNSNames, opts.CACertPEM, opts.CAKeyPEM)
 	}
 	return
 }
