@@ -58,7 +58,11 @@ func GenerateRootCA() (certOut *x509.Certificate, certPEM []byte, keyOut *rsa.Pr
 	return
 }
 
-func GenerateServerCert(commonName string, caCertPEM, caKeyPEM []byte) (certOut *x509.Certificate, certPEM []byte, keyOut *rsa.PrivateKey, keyPEM []byte, err error) {
+func GenerateServerCert(names []string, caCertPEM, caKeyPEM []byte) (certOut *x509.Certificate, certPEM []byte, keyOut *rsa.PrivateKey, keyPEM []byte, err error) {
+	if len(names) == 0 {
+		err = fmt.Errorf("missing %s", "names")
+		return
+	}
 	var (
 		caCert *x509.Certificate
 		caKey  *rsa.PrivateKey
@@ -96,7 +100,7 @@ func GenerateServerCert(commonName string, caCertPEM, caKeyPEM []byte) (certOut 
 		Subject: pkix.Name{
 			Country:      []string{"CN"},
 			Organization: []string{"AutoOps"},
-			CommonName:   commonName,
+			CommonName:   names[0],
 		},
 		NotBefore:      time.Now().Add(-10 * time.Second),
 		NotAfter:       time.Now().AddDate(30, 0, 0),
@@ -104,6 +108,7 @@ func GenerateServerCert(commonName string, caCertPEM, caKeyPEM []byte) (certOut 
 		ExtKeyUsage:    []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		IsCA:           false,
 		MaxPathLenZero: true,
+		DNSNames:       names[1:],
 	}
 	if keyOut, err = rsa.GenerateKey(rand.Reader, 2048); err != nil {
 		return
