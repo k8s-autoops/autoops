@@ -2,13 +2,11 @@ package autoops
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"log"
 )
 
 type KeyPairOptions struct {
@@ -63,17 +61,9 @@ func EnsureSecretAsKeyPair(
 			return
 		}
 	} else {
-		for k, v := range secret.Data {
-			log.Printf("%s: %s", k, v)
-		}
-		if certPEM, err = base64.StdEncoding.DecodeString(string(secret.Data[corev1.TLSCertKey])); err != nil {
-			return
-		}
+		certPEM, keyPEM = secret.Data[corev1.TLSCertKey], secret.Data[corev1.TLSPrivateKeyKey]
 		if len(certPEM) == 0 {
 			err = fmt.Errorf("missing key: %s", corev1.TLSCertKey)
-			return
-		}
-		if keyPEM, err = base64.StdEncoding.DecodeString(string(secret.Data[corev1.TLSPrivateKeyKey])); err != nil {
 			return
 		}
 		if len(keyPEM) == 0 {
