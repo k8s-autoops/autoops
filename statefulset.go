@@ -9,9 +9,9 @@ import (
 )
 
 func StatefulSetGetOrCreate(ctx context.Context, client *kubernetes.Clientset, sts *appsv1.StatefulSet) (stsOut *appsv1.StatefulSet, err error) {
-	if stsOut, err = client.AppsV1().StatefulSets(sts.Namespace).Get(context.Background(), sts.Name, metav1.GetOptions{}); err != nil {
+	if stsOut, err = client.AppsV1().StatefulSets(sts.Namespace).Get(ctx, sts.Name, metav1.GetOptions{}); err != nil {
 		if errors.IsNotFound(err) {
-			stsOut, err = client.AppsV1().StatefulSets(sts.Namespace).Create(context.Background(), sts, metav1.CreateOptions{})
+			stsOut, err = client.AppsV1().StatefulSets(sts.Namespace).Create(ctx, sts, metav1.CreateOptions{})
 		}
 	}
 

@@ -9,9 +9,9 @@ import (
 )
 
 func ServiceGetOrCreate(ctx context.Context, client *kubernetes.Clientset, service *corev1.Service) (serviceOut *corev1.Service, err error) {
-	if serviceOut, err = client.CoreV1().Services(service.Namespace).Get(context.Background(), service.Name, metav1.GetOptions{}); err != nil {
+	if serviceOut, err = client.CoreV1().Services(service.Namespace).Get(ctx, service.Name, metav1.GetOptions{}); err != nil {
 		if errors.IsNotFound(err) {
-			serviceOut, err = client.CoreV1().Services(service.Namespace).Create(context.Background(), service, metav1.CreateOptions{})
+			serviceOut, err = client.CoreV1().Services(service.Namespace).Create(ctx, service, metav1.CreateOptions{})
 		}
 	}
 
