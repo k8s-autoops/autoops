@@ -68,6 +68,7 @@ func NewMutatingAdmissionHTTPHandler(
 		// send response
 		var responseJSON []byte
 		if responseJSON, err = json.Marshal(admissionv1.AdmissionReview{
+			TypeMeta: review.TypeMeta,
 			Response: &admissionv1.AdmissionResponse{
 				UID:       review.Request.UID,
 				Allowed:   true,
