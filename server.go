@@ -20,7 +20,7 @@ const (
 )
 
 func NewMutatingAdmissionHTTPHandler(
-	fn func(request *admissionv1.AdmissionRequest, patches *[]map[string]interface{}) (err error),
+	fn func(ctx context.Context, request *admissionv1.AdmissionRequest, patches *[]map[string]interface{}) (err error),
 ) http.HandlerFunc {
 	return func(rw http.ResponseWriter, req *http.Request) {
 		var err error
@@ -42,7 +42,7 @@ func NewMutatingAdmissionHTTPHandler(
 		log.Println(string(raw))
 		// execute fn
 		var patches []map[string]interface{}
-		if err = fn(review.Request, &patches); err != nil {
+		if err = fn(req.Context(), review.Request, &patches); err != nil {
 			err = fmt.Errorf("failed to execute handler: %s", err.Error())
 			return
 		}
